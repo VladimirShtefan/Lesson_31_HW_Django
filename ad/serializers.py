@@ -3,6 +3,7 @@ from django.utils.encoding import smart_str
 from rest_framework import serializers
 
 from ad.models import Ad
+from ad.validators import check_published
 from category.models import Category
 from user.models import User
 
@@ -24,6 +25,14 @@ class CreatableSlugRelatedField(serializers.SlugRelatedField):
             self.fail('does_not_exist', slug_name=self.slug_field, value=smart_str(data))
         except (TypeError, ValueError):
             self.fail('invalid')
+
+
+class AdCreateSerializer(serializers.ModelSerializer):
+    is_published = serializers.BooleanField(validators=[check_published])
+
+    class Meta:
+        model = Ad
+        fields = '__all__'
 
 
 class AdPostSerializer(serializers.ModelSerializer):

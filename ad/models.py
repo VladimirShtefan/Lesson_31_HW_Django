@@ -1,3 +1,4 @@
+from django.core.validators import MinLengthValidator, MinValueValidator
 from django.db import models
 
 from category.models import Category
@@ -5,11 +6,23 @@ from user.models import User
 
 
 class Ad(models.Model):
-    name = models.CharField(max_length=50, db_index=True, verbose_name='Заголовок')
+    name = models.CharField(
+        max_length=50,
+        db_index=True,
+        verbose_name='Заголовок',
+        null=False,
+        blank=False,
+        validators=[MinLengthValidator(10)]
+    )
     author = models.ForeignKey(User, verbose_name='Автор', on_delete=models.CASCADE, related_name='user_ad')
-    price = models.DecimalField(max_digits=10, decimal_places=0, verbose_name='Стоимость')
+    price = models.DecimalField(
+        max_digits=10,
+        decimal_places=0,
+        verbose_name='Стоимость',
+        validators=[MinValueValidator(0)]
+    )
     description = models.TextField(max_length=500, null=True, blank=True, verbose_name='Описание')
-    is_published = models.BooleanField(default=True, verbose_name='Состояние')
+    is_published = models.BooleanField(default=False, verbose_name='Состояние')
     image = models.ImageField(upload_to='post_images/', null=True, blank=True, verbose_name='Изображение')
     category = models.ManyToManyField(Category, verbose_name='Категории')
 
