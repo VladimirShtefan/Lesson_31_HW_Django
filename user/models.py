@@ -1,7 +1,9 @@
+from django.core.validators import RegexValidator
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 from location.models import Location
+from user.validators import CheckBirthDate
 
 
 class User(AbstractUser):
@@ -15,6 +17,13 @@ class User(AbstractUser):
     age = models.PositiveSmallIntegerField(verbose_name='Возраст', null=True, blank=True)
     location = models.ForeignKey(Location, on_delete=models.CASCADE, verbose_name='Местоположение',
                                  null=True, blank=True)
+    birth_date = models.DateField(validators=[CheckBirthDate], verbose_name='День рождения')
+    email = models.EmailField(
+        unique=True, verbose_name='E-mail',
+        validators=[RegexValidator(regex='@rambler.ru', inverse_match=True,
+                                   message='Запрещена регистрация с почтового адреса в домене rambler.ru.')
+                    ]
+    )
 
     class Meta:
         verbose_name = 'Пользователь'
